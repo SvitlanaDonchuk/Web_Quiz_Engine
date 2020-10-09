@@ -1,0 +1,17 @@
+/.gradle/*
+/.idea/*
+jar_extract*
+task-remote-info.yaml
+task-info.yaml
+*.class
+task.html
+/course-info.yaml
+/course-remote-info.yaml
+/Web Quiz Engine/lesson-info.yaml
+*.bin
+*.txt
+*.css
+*.html
+*.js
+/Web Quiz Engine/task/build/test-results/test/TEST-tests.WebQuizEngineTest.xml
+/Web Quiz Engine/task/build/test-results/test/binary/output.bin.idx
