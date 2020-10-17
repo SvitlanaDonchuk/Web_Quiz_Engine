@@ -18,7 +18,8 @@ import java.util.*;
 @Validated
 public class QuizWebController {
 
-    @Autowired private QuizRepository quizRepository;
+    @Autowired
+    private QuizRepository quizRepository;
 
     @PostMapping(consumes = "application/json")
     public Quiz addQuiz(@Valid @RequestBody Quiz quiz){
