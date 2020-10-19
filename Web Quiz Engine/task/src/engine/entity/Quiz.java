@@ -8,15 +8,15 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @JsonPropertyOrder({"id", "title", "text", "options"})
 @Entity
 public class Quiz {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotBlank
@@ -26,21 +26,22 @@ public class Quiz {
     private String text;
 
     @ElementCollection
-    @NotNull
-    @Size(min = 2)
+    @NotNull(message = "Options field is required")
+    @Size(min = 2, message = "There should be at least 2 options")
     private List<String> options;
 
     @ElementCollection
-    private List<Integer> answer;
+    @NotNull(message = "Answer field is required")
+    private Set<Integer> answer;
 
-    public Quiz(){
-    }
+    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.DETACH)
+    private User author;
 
-    public Quiz(String title, String text, List<String> options, ArrayList<Integer> answer){
-        this.title = title;
-        this.text = text;
-        this.options = options;
-        this.answer = answer;
+    public Quiz() { }
+
+    public Long getId() {
+        return id;
     }
 
     public void setId(Long id) {
@@ -67,18 +68,26 @@ public class Quiz {
         return options;
     }
 
-    public Long getId() {
-        return id;
+    public void setOptions(List<String> options) {
+        this.options = options;
     }
 
     @JsonIgnore
-    public List<Integer> getAnswer() {
-        return answer == null ? new ArrayList<Integer>() : answer;
+    public Set<Integer> getAnswer() {
+        return answer;
     }
 
     @JsonProperty
-    public void setAnswer(List<Integer> answer) {
+    public void setAnswer(Set<Integer> answer) {
         this.answer = answer;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public Result solve(Answer answer){

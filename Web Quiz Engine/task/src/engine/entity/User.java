@@ -1,30 +1,42 @@
 package engine.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import engine.answer.SolvedQuiz;
+import engine.utils.Serializer;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Email
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Size(min = 1)
+    @Size(min = 5)
     private String password;
 
-    public User(){
+    @JsonIgnore
+    @Convert(converter = Serializer.class)
+    private List<SolvedQuiz> solvedQuizzes;
 
-    }
-
-    public User(String email, String password){
-        this.email = email;
-        this.password = password;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     public Long getId() {
@@ -35,6 +47,11 @@ public class User {
         this.id = id;
     }
 
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
     public String getEmail() {
         return email;
     }
@@ -43,11 +60,65 @@ public class User {
         this.email = email;
     }
 
+    @Override
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
 
+    @JsonProperty
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<SolvedQuiz> getSolvedQuizzes() {
+        return solvedQuizzes;
+    }
+
+    public void setSolvedQuizzes(List<SolvedQuiz> solvedQuizzes) {
+        this.solvedQuizzes = solvedQuizzes;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(getEmail(), user.getEmail()) &&
+                Objects.equals(getPassword(), user.getPassword());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEmail(), getPassword());
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
